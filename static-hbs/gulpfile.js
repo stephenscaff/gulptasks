@@ -12,9 +12,9 @@ const gulp            = require('gulp'),
       sass            = require('gulp-sass'),
       source          = require('vinyl-source-stream'),
       sourcemaps      = require('gulp-sourcemaps'),
-      uglify          = require('gulp-uglifyes')
       gls             = require('gulp-live-server'),
-      handlebars      = require('gulp-compile-handlebars');
+      handlebars      = require('gulp-compile-handlebars'),
+      uglify = require('gulp-uglifyes');
 
 // Server Port
 const PORT = 8888;
@@ -26,17 +26,6 @@ function handleError(err) {
   console.log(err.toString());
   this.emit('end');
 }
-
-
-/**
- * Compress Images
- */
-gulp.task('build-images', () => {
-
-  return gulp.src('src/assets/images/')
-    .pipe(newer('dist/assets/images/'))
-    .pipe(gulp.dest('dist/assets/images/'));
-});
 
 
 /**
@@ -70,22 +59,22 @@ gulp.task('build-css', () => {
  */
 gulp.task('build-js', () => {
 
-  var bundler = browserify('src/assets/js/app.js').transform('babelify', {presets: ['env']})
+  var bundler = browserify('src/assets/js/app.js').transform('babelify', {presets: ['@babel/preset-env']})
 
   return bundler.bundle()
   .on('error', handleError)
   .pipe(source('app.js'))
   .pipe(buffer())
   .pipe(sourcemaps.init())
-  .pipe(uglify({
-    mangle: false,
-    compress: false,
-    output: {
-      beautify: true
-    }
-  }))
-  .pipe(rename({suffix: '.min'}))
-  .pipe(sourcemaps.write('.'))
+    .pipe(uglify({
+      mangle: false,
+      compress: false,
+      output: {
+        beautify: true
+      }
+    }))
+    .pipe(rename({suffix: '.min'}))
+    .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest('dist/assets/js/'));
 });
 
@@ -98,7 +87,7 @@ gulp.task('build-hbs', () => {
   return gulp.src('src/pages/*.hbs')
     .pipe(handlebars({}, {
       ignorePartials: true,
-      batch: [folder.src + 'partials']
+      batch: ['src/partials']
     }))
     .pipe(rename({
       extname: '.html'
@@ -112,15 +101,26 @@ gulp.task('build-hbs', () => {
 gulp.task('build-templates', () => {
 
   return gulp.src('src/assets/templates/*')
-    .pipe(include())
+    .pipe(newer('dist/assets/templates/'))
     .pipe(gulp.dest('dist/assets/templates/'));
+});
+
+
+/**
+ * Compress Images
+ */
+gulp.task('build-images', () => {
+
+  return gulp.src('src/assets/images/')
+    .pipe(newer('dist/assets/images/'))
+    .pipe(gulp.dest('dist/assets/images/'));
 });
 
 /**
  * Live Server at port:
  */
 gulp.task('serve', () => {
-  var server = gls.static(folder.build, PORT);
+  var server = gls.static('dist/', PORT);
   server.start();
 });
 
@@ -128,11 +128,11 @@ gulp.task('serve', () => {
  * Run Tasks
  */
 gulp.task('run', [
-  'build-images',
   'build-css',
   'build-js',
   'build-hbs',
   'build-templates',
+  'build-images',
   'serve'
 ]);
 
@@ -141,17 +141,51 @@ gulp.task('run', [
  */
 gulp.task('watch', () => {
 
-  gulp.watch('src/assets/images/**/*', ['build-images']);
   gulp.watch('src/assets/scss/**/*', ['build-css']);
-  gulp.watch('./inc/admin/admin-theme/assets/scss/**/*', ['build-admin-css']);
   gulp.watch('src/assets/js/**/*', ['build-js']);
-  gulp.watch(folder.src + 'assets/templates/*', ['build-templates']);
-  gulp.watch(folder.src + '**/*', ['build-hbs']);
-  gulp.watch('src/assets/videos/**/*', ['build-videos']);
-
+  gulp.watch('src/assets/templates/*', ['build-templates']);
+  gulp.watch('src/**/*', ['build-hbs']);
+  gulp.watch('src/assets/images/**/*', ['build-images']);
+  gulp.watch('src/**/*.html', ['serve'], (file) => {
+    server.notify.apply(server, [file]);
+  });
 });
 
 /**
  * Gulp
+ */
+gulp.task('default', ['run', 'watch']);
+
+
+/**
+ * Runner
+ * No jquery as of now
+ */
+gulp.task('run', [
+  'build-images',
+  'build-hbs',
+  'build-templates',
+  'build-css',
+  'build-js',
+  'serve']
+);
+
+/**
+ * Watcher
+ */
+gulp.task('watch', () => {
+
+  gulp.watch('src/assets/scss/**/*', ['build-css']);
+  gulp.watch('src/assets/js/**/*', ['build-js']);
+  gulp.watch('src/assets/templates/*', ['build-templates']);
+  gulp.watch('src/**/*', ['build-hbs']);
+  gulp.watch('src/assets/images/**/*', ['build-images']);
+  gulp.watch('src/**/*.html', ['serve'], (file) => {
+    server.notify.apply(server, [file]);
+  });
+});
+
+/**
+ * Gulp Go
  */
 gulp.task('default', ['run', 'watch']);

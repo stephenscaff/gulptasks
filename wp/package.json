@@ -1,0 +1,46 @@
+{
+  "name": "kiddermathews",
+  "version": "1.0.0",
+  "description": "A project for kiddermathews",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GreenRubino/kiddermathews.git"
+  },
+  "author": "stephen scaff",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GreenRubino/kiddermathews/issues"
+  },
+  "homepage": "https://github.com/GreenRubino/kiddermathews#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.1",
+    "babel-preset-env": "^1.7.0",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.2",
+    "eslint": "^5.1.0",
+    "eslint-config-eslint": "^5.0.1",
+    "eslint-plugin-node": "^8.0.1",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-compile-handlebars": "^0.6.1",
+    "gulp-newer": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-uglifyes": "^0.2.1",
+    "jshint": "^2.9.7",
+    "postcss-assets": "^5.0.0",
+    "stylelint": "^9.10.0",
+    "stylelint-config-standard": "^18.2.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.4"
+  }
+}
+11
