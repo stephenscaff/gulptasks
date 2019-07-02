@@ -1,12 +1,12 @@
 /**
  * Gulp File for Static projects using HBS partials.
  */
+
 const gulp            = require('gulp'),
       autoprefixer    = require('gulp-autoprefixer'),
       babelify        = require('babelify'),
       browserify      = require('browserify'),
       buffer          = require('vinyl-buffer'),
-      del             = require('del'),
       newer           = require('gulp-newer'),
       rename          = require('gulp-rename'),
       sass            = require('gulp-sass'),
@@ -14,25 +14,25 @@ const gulp            = require('gulp'),
       sourcemaps      = require('gulp-sourcemaps'),
       gls             = require('gulp-live-server'),
       handlebars      = require('gulp-compile-handlebars'),
-      uglify          = require('gulp-uglifyes');
+      uglify = require('gulp-uglifyes');
 
 // Server Port
-const PORT = 9992;
+const PORT = 8888;
 
-// Error handler
+/**
+ * Error Handler
+ */
 function handleError(err) {
   console.log(err.toString());
   this.emit('end');
 }
 
-// Cleanup
-function clean() {
-  return del(["dist/"]);
-}
 
+/**
+ * Build CSS/SCSS
+ */
+gulp.task('build-css', () => {
 
-// CSS
-function buildCSS() {
   return gulp.src('src/assets/scss/*.scss')
   .pipe(sourcemaps.init())
   .pipe(sass({
@@ -50,15 +50,17 @@ function buildCSS() {
   .pipe(rename({ suffix: '.min' }))
   .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest('dist/assets/css/'))
-}
+});
 
-// Build JS
-// uses browserify for js modules and babel for transpiling
-function buildJS() {
-  const bundler = browserify('src/assets/js/app.js').transform(
-    'babelify',
-    { presets: ['@babel/preset-env'] }
-  )
+
+
+/**
+ * JavaScript
+ */
+gulp.task('build-js', () => {
+
+  var bundler = browserify('src/assets/js/app.js').transform('babelify', {presets: ['@babel/preset-env']})
+
   return bundler.bundle()
   .on('error', handleError)
   .pipe(source('app.js'))
@@ -74,11 +76,14 @@ function buildJS() {
     .pipe(rename({suffix: '.min'}))
     .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest('dist/assets/js/'));
-}
+});
 
 
-// HBS Partials
-function buildHBS() {
+/**
+ * Handlebars Partials
+ */
+gulp.task('build-hbs', () => {
+
   return gulp.src('src/pages/*.hbs')
     .pipe(handlebars({}, {
       ignorePartials: true,
@@ -88,50 +93,99 @@ function buildHBS() {
       extname: '.html'
     }))
     .pipe(gulp.dest('dist/'));
-}
+});
 
-// Templates
-function buildTemplates() {
-  return gulp.src('src/assets/templates/**/*')
+/**
+ * Tempaltes
+ */
+gulp.task('build-templates', () => {
+
+  return gulp.src('src/assets/templates/*')
     .pipe(newer('dist/assets/templates/'))
-    .pipe(gulp.dest('dist/assets/templates/'))
-}
+    .pipe(gulp.dest('dist/assets/templates/'));
+});
 
-// Images
-function buildImages() {
-  return gulp.src('src/assets/images/', { allowEmpty: true })
+
+/**
+ * Compress Images
+ */
+gulp.task('build-images', () => {
+
+  return gulp.src('src/assets/images/')
     .pipe(newer('dist/assets/images/'))
-    .pipe(gulp.dest('dist/assets/images/'))
-}
+    .pipe(gulp.dest('dist/assets/images/'));
+});
 
-// Serve
-function serve() {
+/**
+ * Live Server at port:
+ */
+gulp.task('serve', () => {
   var server = gls.static('dist/', PORT);
   server.start();
-}
+});
 
-// Watcher
-function watch() {
-  gulp.watch('src/assets/scss/**/*', buildCSS);
-  gulp.watch('src/assets/js/**/*', buildJS);
-  gulp.watch('src/assets/templates/**/*', buildTemplates);
-  gulp.watch('src/**/*', buildHBS);
-  gulp.watch('src/**/*.html', serve, (file) => {
+/**
+ * Run Tasks
+ */
+gulp.task('run', [
+  'build-css',
+  'build-js',
+  'build-hbs',
+  'build-templates',
+  'build-images',
+  'serve'
+]);
+
+/**
+ * Watcher
+ */
+gulp.task('watch', () => {
+
+  gulp.watch('src/assets/scss/**/*', ['build-css']);
+  gulp.watch('src/assets/js/**/*', ['build-js']);
+  gulp.watch('src/assets/templates/*', ['build-templates']);
+  gulp.watch('src/**/*', ['build-hbs']);
+  gulp.watch('src/assets/images/**/*', ['build-images']);
+  gulp.watch('src/**/*.html', ['serve'], (file) => {
     server.notify.apply(server, [file]);
   });
-}
+});
 
-// Build
-var build = gulp.parallel(
-  clean,
-  buildCSS,
-  buildJS,
-  buildHBS,
-  buildTemplates,
-  buildImages,
-  serve,
-  watch
+/**
+ * Gulp
+ */
+gulp.task('default', ['run', 'watch']);
+
+
+/**
+ * Runner
+ * No jquery as of now
+ */
+gulp.task('run', [
+  'build-images',
+  'build-hbs',
+  'build-templates',
+  'build-css',
+  'build-js',
+  'serve']
 );
 
-gulp.task(build);
-gulp.task('default', build);
+/**
+ * Watcher
+ */
+gulp.task('watch', () => {
+
+  gulp.watch('src/assets/scss/**/*', ['build-css']);
+  gulp.watch('src/assets/js/**/*', ['build-js']);
+  gulp.watch('src/assets/templates/*', ['build-templates']);
+  gulp.watch('src/**/*', ['build-hbs']);
+  gulp.watch('src/assets/images/**/*', ['build-images']);
+  gulp.watch('src/**/*.html', ['serve'], (file) => {
+    server.notify.apply(server, [file]);
+  });
+});
+
+/**
+ * Gulp Go
+ */
+gulp.task('default', ['run', 'watch']);

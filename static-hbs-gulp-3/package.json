@@ -1,7 +1,7 @@
 {
-  "name": "jumpoff",
+  "name": "static_hbs",
   "version": "1.0.0",
-  "description": "A little gulp starter with hbs partials",
+  "description": "Gulp project for static projects using handlebars",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +9,7 @@
   "author": "Stephen Scaff",
   "license": "ISC",
   "devDependencies": {
-    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-env": "^7.2.3",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.1",
     "babel-preset-env": "^1.7.0",
@@ -18,22 +18,21 @@
     "eslint": "^5.12.1",
     "eslint-config-eslint": "^5.0.1",
     "eslint-plugin-node": "^8.0.1",
-    "del": "^4.1.1",
-    "gulp": "^4",
     "gulp-autoprefixer": "^6.0.0",
     "gulp-compile-handlebars": "^0.6.1",
-    "gulp-live-server": "0.0.31",
     "gulp-newer": "^1.4.0",
-    "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-terser": "^1.1.7",
-    "gulp-uglifyes": "^0.2.1",
     "postcss-assets": "^5.0.0",
     "stylelint": "^9.10.1",
     "stylelint-config-standard": "^18.2.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-live-server": "0.0.31",
+    "gulp-rename": "^1.4.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglifyes": "^0.2.1"
+  }
 }
